@@ -79,7 +79,7 @@ class Action:
 class FileSorter:
     """Sort a set of files into a set of directories.
 
-    The possible targets are scored by the similarity of the sames to
+    The possible targets are scored by the similarity of the names to
     the source file name.
 
     """
