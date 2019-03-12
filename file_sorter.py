@@ -182,11 +182,14 @@ class FileSorter:
         candidate.
 
         """
-        logging.getLogger('FileSorter').info('Moving: %s', action.source)
-        shutil.move(
-            os.path.join(action.root, action.source),
-            os.path.join(candidate.root, candidate.name),
+        source_path = os.path.join(action.root, action.source)
+        target_path = os.path.join(candidate.root, candidate.name),
+        logging.getLogger('FileSorter').info(
+            'Moving "%s" into "%s"',
+            source_path,
+            target_path,
         )
+        shutil.move(source_path, target_path)
         return True
 
 
