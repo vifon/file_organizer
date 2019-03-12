@@ -199,7 +199,7 @@ class InteractiveFileSorter(FileSorter):
 
     def execute_action(self, action, candidate):
         while True:
-            print("Proposed target: ", candidate.name)
+            print("Proposed target:", candidate.name)
             choice = input(
                 'Move? (score: {score}, ratio: {ratio:.2f}) '
                 '[ (y)es/(s)kip/(N)o ] '.format(
