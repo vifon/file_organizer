@@ -183,7 +183,7 @@ class FileSorter:
 
         """
         source_path = os.path.join(action.root, action.source)
-        target_path = os.path.join(candidate.root, candidate.name),
+        target_path = os.path.join(candidate.root, candidate.name)
         logging.getLogger('FileSorter').info(
             'Moving "%s" into "%s"',
             source_path,
