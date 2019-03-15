@@ -51,6 +51,14 @@ class Candidate:
         """
         return len(element) > 2
 
+    def score(self):
+        """Score the candidate.  Suitable as a sorting key."""
+        return (
+            -self.score,
+            -self.ratio,
+            self.name,
+        )
+
     def __hash__(self):
         return hash((self.root, self.name))
 
@@ -74,16 +82,8 @@ class Action:
         """Loop over the candidates in order defined by self.score."""
         return iter(sorted(
             self.candidates,
-            key=self.score,
+            key=Candidate.score,
         ))
-
-    def score(self, candidate):
-        """Score the candidates.  Suitable as a sorting key."""
-        return (
-            -candidate.score,
-            -candidate.ratio,
-            candidate.name,
-        )
 
 
 class FileSorter:
