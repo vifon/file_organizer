@@ -51,6 +51,16 @@ class Candidate:
         """
         return len(element) > 2
 
+    def __hash__(self):
+        return hash((self.root, self.name))
+
+    def __eq__(self, other):
+        return (self.name == other.name
+                and self.root == other.root)
+
+    def __repr__(self):
+        return '<Candidate "{}">'.format(self.name)
+
 
 class Action:
     """A source file along with the possible targets."""
@@ -58,7 +68,7 @@ class Action:
     def __init__(self, source, source_root, candidates=None):
         self.source = source
         self.root = source_root
-        self.candidates = candidates or []
+        self.candidates = candidates or set()
 
     def __iter__(self):
         """Loop over the candidates in order defined by self.score."""
@@ -95,7 +105,7 @@ class FileSorter:
         """
         self.source_root = source
         self.rules = rules or {}
-        self.actions = []
+        self.actions = {}
 
     def _get_targets(self, target_root):
         """Get all the target directories in a root."""
@@ -134,10 +144,22 @@ class FileSorter:
             ))
 
         for file in self._get_files(source_root):
-            action = Action(
-                source=file,
-                source_root=source_root,
-            )
+            key = os.path.join(source_root, file)
+            if key in self.actions:
+                action = self.actions[key]
+            else:
+                action = Action(
+                    source=file,
+                    source_root=source_root,
+                )
+
+            for rule, target in self.rules.items():
+                if rule in file:
+                    action.candidates.add(Candidate(
+                        name=os.path.basename(target),
+                        root=os.path.dirname(target),
+                        score=9999,
+                    ))
 
             for candidate in candidates:
                 score = 0
@@ -146,21 +168,14 @@ class FileSorter:
                         score += 1
                 if score > 0:
                     candidate.score = score
-                    action.candidates.append(candidate)
+                    action.candidates.add(candidate)
 
-            for rule, target in self.rules.items():
-                if rule in file:
-                    action.candidates.append(Candidate(
-                        name=target,
-                        root='/',
-                        score=9999,
-                    ))
             if action.candidates:
-                self.actions.append(action)
+                self.actions[key] = action
 
     def perform_actions(self):
         """Perform the queued actions."""
-        for action in self.actions:
+        for action in self.actions.values():
             self.consider_action(action)
 
     def consider_action(self, action):
