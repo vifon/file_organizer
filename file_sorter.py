@@ -62,10 +62,10 @@ class Action:
 
     def __iter__(self):
         """Loop over the candidates in order defined by self.score."""
-        return sorted(
-                self.candidates,
-                key=self.score,
-        )
+        return iter(sorted(
+            self.candidates,
+            key=self.score,
+        ))
 
     def score(self, candidate):
         """Score the candidates.  Suitable as a sorting key."""
@@ -170,7 +170,7 @@ class FileSorter:
         self.execute_action to change this behavior.
 
         """
-        for candidate in action.candidates:
+        for candidate in action:
             if self.execute_action(action, candidate):
                 return
 
