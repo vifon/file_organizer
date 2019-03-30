@@ -211,6 +211,32 @@ class FileSorter:
 class InteractiveFileSorter(FileSorter):
     """A FileSorter variant that interactively asks the user about candidates."""
 
+    def perform_actions(self):
+        self.queue = []
+        super().perform_actions()
+        if not self.queue:
+            return
+        print("\n\nQueued actions:")
+        for action, candidate in self.queue:
+            print('\n-', action.source)
+            print('->', candidate.name)
+        while True:
+            choice = input('\nPerform? [ (Y)es/(n)o ] ').lower()
+            if choice in {'y', 'n', 'q', ''}:
+                break
+        if choice in {'y'}:
+            for action, candidate in self.queue:
+                print(
+                    'Moving "{}"... '.format(action.source),
+                    end="",
+                    flush=True,
+                )
+                if super().execute_action(action, candidate):
+                    print("DONE!")
+                else:
+                    print("ERROR!")
+
+
     def consider_action(self, action):
         print("\nCurrent file:", action.source)
         return super().consider_action(action)
@@ -226,14 +252,8 @@ class InteractiveFileSorter(FileSorter):
                 )
             ).lower()
             if choice in {'y'}:
-                print(
-                    'Moving "{}"... '.format(action.source),
-                    end="",
-                    flush=True,
-                )
-                ret = super().execute_action(action, candidate)
-                print("DONE!")
-                return ret
+                self.queue.append((action, candidate))
+                return True
             elif choice in {'s'}:
                 return True
             elif choice in {'n', ''}:
