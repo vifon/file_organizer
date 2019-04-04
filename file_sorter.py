@@ -220,6 +220,7 @@ class InteractiveFileSorter(FileSorter):
 
     def perform_actions(self):
         self.queue = []
+        self.accept_all = False
         super().perform_actions()
         if not self.queue:
             return
@@ -245,19 +246,23 @@ class InteractiveFileSorter(FileSorter):
 
 
     def consider_action(self, action):
-        print("\nCurrent file:", action.source)
+        if not self.accept_all:
+            print("\nCurrent file:", action.source)
         return super().consider_action(action)
 
     def execute_action(self, action, candidate):
         while True:
-            print("Proposed target:", candidate.name)
-            choice = input(
-                'Move? (score: {score}, ratio: {ratio:.2f}) '
-                '[ (y)es/(s)kip/(N)o ] '.format(
-                    score=candidate.score,
-                    ratio=candidate.ratio,
-                )
-            ).lower()
+            if self.accept_all:
+                choice = 'y'
+            else:
+                print("Proposed target:", candidate.name)
+                choice = input(
+                    'Move? (score: {score}, ratio: {ratio:.2f}) '
+                    '[ (y)es/(s)kip/(N)o/(a)ll ] '.format(
+                        score=candidate.score,
+                        ratio=candidate.ratio,
+                    )
+                ).lower()
             if choice in {'y'}:
                 self.queue.append((action, candidate))
                 return True
@@ -265,6 +270,8 @@ class InteractiveFileSorter(FileSorter):
                 return True
             elif choice in {'n', ''}:
                 return False
+            elif choice in {'a'}:
+                self.accept_all = True
             elif choice in {'q'}:
                 sys.exit(0)
             else:
