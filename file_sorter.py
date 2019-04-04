@@ -182,7 +182,7 @@ class FileSorter:
 
     def perform_actions(self):
         """Perform the queued actions."""
-        for action in self.actions.values():
+        for action in sorted(self.actions.values(), key=lambda x: x.source):
             self.consider_action(action)
 
     def consider_action(self, action):
