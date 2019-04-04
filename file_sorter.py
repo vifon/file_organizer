@@ -25,10 +25,11 @@ class FileSorterError(Exception):
 class Candidate:
     """A candidate for a target directory."""
 
-    def __init__(self, root, name, score=None):
+    def __init__(self, root, name, score=None, length_threshold=3):
         self.root = root
         self.name = name
         self.score = score
+        self.length_threshold = length_threshold
 
     @cached_property
     def elements(self):
@@ -50,7 +51,7 @@ class Candidate:
         By default let's skip very short words.
 
         """
-        return len(element) > 2
+        return len(element) >= self.length_threshold
 
     def score(self):
         """Score the candidate.  Suitable as a sorting key."""
@@ -96,7 +97,7 @@ class FileSorter:
 
     """
 
-    def __init__(self, source=None, rules=None):
+    def __init__(self, source=None, rules=None, length_threshold=3):
         """Arguments:
 
         - source (optional): a default argument for
@@ -108,6 +109,7 @@ class FileSorter:
         self.source_root = source
         self.rules = rules or {}
         self.actions = {}
+        self.length_threshold = length_threshold
 
     def _get_targets(self, target_root):
         """Get all the target directories in a root."""
@@ -143,6 +145,7 @@ class FileSorter:
             candidates.append(Candidate(
                 name=target,
                 root=target_root,
+                length_threshold=self.length_threshold,
             ))
 
         for file in self._get_files(source_root):
@@ -161,6 +164,7 @@ class FileSorter:
                         name=os.path.basename(target),
                         root=os.path.dirname(target),
                         score=9999,
+                        length_threshold=self.length_threshold,
                     ))
 
             for candidate in candidates:
