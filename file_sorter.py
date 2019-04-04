@@ -4,6 +4,7 @@ Automatically sort a bunch of files into fitting directories.
 
 """
 
+import copy
 import logging
 import os
 import re
@@ -60,11 +61,12 @@ class Candidate:
         )
 
     def __hash__(self):
-        return hash((self.root, self.name))
+        return hash((self.root, self.name, self.score))
 
     def __eq__(self, other):
         return (self.name == other.name
-                and self.root == other.root)
+                and self.root == other.root
+                and self.score == other.score)
 
     def __repr__(self):
         return '<Candidate "{}">'.format(self.name)
@@ -167,8 +169,9 @@ class FileSorter:
                     if word.lower() in file.lower():
                         score += 1
                 if score > 0:
-                    candidate.score = score
-                    action.candidates.add(candidate)
+                    c = copy.copy(candidate)
+                    c.score = score
+                    action.candidates.add(c)
 
             if action.candidates:
                 self.actions[key] = action
