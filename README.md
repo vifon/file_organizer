@@ -7,7 +7,8 @@ Each direct subdirectory of the target directory is scored for each
 file in the input directory as a possible candidate for destination.
 The primary score is the number of words the target directory name
 contains that the source file name also contains (see the example
-below, it'll be easier to understand this way).  If there are multiple
+below, it'll be easier to understand this way).  The short words are
+ignored, by default these below 3 characters.  If there are multiple
 candidates with the same primary score, a secondary score is used: the
 percentage of words in the target directory name that appeared in the
 source file name.  Additionally targets designated with the explicit
