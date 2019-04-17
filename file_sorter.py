@@ -12,6 +12,11 @@ import shutil
 import sys
 
 
+__license__ = 'GPL3'
+__version__ = '1.0.0'
+__author__ = __maintainer__ = 'Wojciech Siewierski'
+
+
 def cached_property(function):
     from functools import lru_cache
     return property(lru_cache(maxsize=1)(function))
