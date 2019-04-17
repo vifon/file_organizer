@@ -13,7 +13,7 @@ if __name__ == '__main__':
         version=file_sorter.__version__,
         author=file_sorter.__author__,
         license=file_sorter.__license__,
-        packages=[],
-        py_modules=['file_sorter'],
+        packages=['file_sorter'],
+        py_modules=[],
         scripts=[],
     )

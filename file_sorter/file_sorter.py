@@ -1,97 +1,15 @@
-"""FileSorter
-
-Automatically sort a bunch of files into fitting directories.
-
-"""
-
 import copy
 import logging
 import os
-import re
 import shutil
-import sys
 
-
-__license__ = 'GPL3'
-__version__ = '1.0.0'
-__author__ = __maintainer__ = 'Wojciech Siewierski'
-
-
-def cached_property(function):
-    from functools import lru_cache
-    return property(lru_cache(maxsize=1)(function))
+from .action import Action
+from .candidate import Candidate
 
 
 class FileSorterError(Exception):
     """A generic error in a FileSorter object."""
     pass
-
-
-class Candidate:
-    """A candidate for a target directory."""
-
-    def __init__(self, root, name, score=None, length_threshold=3):
-        self.root = root
-        self.name = name
-        self.score = score
-        self.length_threshold = length_threshold
-
-    @cached_property
-    def elements(self):
-        """The target name split into elements."""
-        return set(filter(self.consider_element, self.split_name()))
-
-    @property
-    def ratio(self):
-        """A secondary estimate of the target fitness."""
-        return self.score / len(self.elements)
-
-    def split_name(self):
-        """Split the name into individual elements."""
-        return re.findall(r'\w+', self.name)
-
-    def consider_element(self, element):
-        """Whether an element should be ignored or not.
-
-        By default let's skip very short words.
-
-        """
-        return len(element) >= self.length_threshold
-
-    def score(self):
-        """Score the candidate.  Suitable as a sorting key."""
-        return (
-            -self.score,
-            -self.ratio,
-            self.name,
-        )
-
-    def __hash__(self):
-        return hash((self.root, self.name, self.score))
-
-    def __eq__(self, other):
-        return (self.name == other.name
-                and self.root == other.root
-                and self.score == other.score)
-
-    def __repr__(self):
-        return '<Candidate "{}">'.format(self.name)
-
-
-class Action:
-    """A source file along with the possible targets."""
-
-    def __init__(self, source, source_root, candidates=None):
-        self.source = source
-        self.root = source_root
-        self.candidates = candidates or set()
-
-    def __iter__(self):
-        """Loop over the candidates in order defined by self.score."""
-        return iter(sorted(
-            self.candidates,
-            key=Candidate.score,
-        ))
 
 
 class FileSorter:
@@ -218,66 +136,3 @@ class FileSorter:
         )
         shutil.move(source_path, target_path)
         return True
-
-
-class InteractiveFileSorter(FileSorter):
-    """A FileSorter variant that interactively asks the user about candidates."""
-
-    def perform_actions(self):
-        self.queue = []
-        self.accept_all = False
-        super().perform_actions()
-        if not self.queue:
-            return
-        print("\n\nQueued actions:")
-        for action, candidate in self.queue:
-            print('\n-', action.source)
-            print('->', candidate.name)
-        while True:
-            choice = input('\nPerform? [ (Y)es/(n)o ] ').lower()
-            if choice in {'y', 'n', 'q', ''}:
-                break
-        if choice in {'y'}:
-            for action, candidate in self.queue:
-                print(
-                    'Moving "{}"... '.format(action.source),
-                    end="",
-                    flush=True,
-                )
-                if super().execute_action(action, candidate):
-                    print("DONE!")
-                else:
-                    print("ERROR!")
-
-
-    def consider_action(self, action):
-        if not self.accept_all:
-            print("\nCurrent file:", action.source)
-        return super().consider_action(action)
-
-    def execute_action(self, action, candidate):
-        while True:
-            if self.accept_all:
-                choice = 'y'
-            else:
-                print("Proposed target:", candidate.name)
-                choice = input(
-                    'Move? (score: {score}, ratio: {ratio:.2f}) '
-                    '[ (y)es/(s)kip/(N)o/(a)ll ] '.format(
-                        score=candidate.score,
-                        ratio=candidate.ratio,
-                    )
-                ).lower()
-            if choice in {'y'}:
-                self.queue.append((action, candidate))
-                return True
-            elif choice in {'s'}:
-                return True
-            elif choice in {'n', ''}:
-                return False
-            elif choice in {'a'}:
-                self.accept_all = True
-            elif choice in {'q'}:
-                sys.exit(0)
-            else:
-                print("Unknown choice:", choice)
