@@ -134,5 +134,8 @@ class FileSorter:
             source_path,
             target_path,
         )
-        shutil.move(source_path, target_path)
+        self.move_command(source_path, target_path)
         return True
+
+    def move_command(self, src, dst):
+        shutil.move(src, dst)
