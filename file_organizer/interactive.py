@@ -1,10 +1,10 @@
 import sys
 
-from . import file_sorter
+from . import file_organizer
 
 
-class InteractiveFileSorter(file_sorter.FileSorter):
-    """A FileSorter variant that interactively asks the user about candidates."""
+class InteractiveFileOrganizer(file_organizer.FileOrganizer):
+    """A FileOrganizer variant that interactively asks the user about candidates."""
 
     def perform_actions(self):
         self.queue = []

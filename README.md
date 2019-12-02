@@ -1,6 +1,6 @@
-# File Sorter
+# File Organizer
 
-*File Sorter* is a Python library that can be used to sort any kind of
+*File Organizer* is a Python library that can be used to sort any kind of
 files into relevant directories.
 
 Each direct subdirectory of the target directory root is scored for
@@ -16,15 +16,15 @@ with the explicit rules are always scored 9999.
 
 ## Example
 
-These are the results of running the [example script](https://github.com/vifon/file_sorter/blob/master/examples/book_sorter.py).
+These are the results of running the [example script](https://github.com/vifon/file_organizer/blob/master/examples/book_organizer.py).
 
-[![](https://raw.githubusercontent.com/vifon/file_sorter/master/examples/1-input_files.png)](https://raw.githubusercontent.com/vifon/file_sorter/master/examples/1-input_files.png)
+[![](https://raw.githubusercontent.com/vifon/file_organizer/master/examples/1-input_files.png)](https://raw.githubusercontent.com/vifon/file_organizer/master/examples/1-input_files.png)
 
-[![](https://raw.githubusercontent.com/vifon/file_sorter/master/examples/2-smart_matching.png)](https://raw.githubusercontent.com/vifon/file_sorter/master/examples/2-smart_matching.png)
+[![](https://raw.githubusercontent.com/vifon/file_organizer/master/examples/2-smart_matching.png)](https://raw.githubusercontent.com/vifon/file_organizer/master/examples/2-smart_matching.png)
 
-[![](https://raw.githubusercontent.com/vifon/file_sorter/master/examples/3-preview.png)](https://raw.githubusercontent.com/vifon/file_sorter/master/examples/3-preview.png)
+[![](https://raw.githubusercontent.com/vifon/file_organizer/master/examples/3-preview.png)](https://raw.githubusercontent.com/vifon/file_organizer/master/examples/3-preview.png)
 
-[![](https://raw.githubusercontent.com/vifon/file_sorter/master/examples/4-output_files.png)](https://raw.githubusercontent.com/vifon/file_sorter/master/examples/4-output_files.png)
+[![](https://raw.githubusercontent.com/vifon/file_organizer/master/examples/4-output_files.png)](https://raw.githubusercontent.com/vifon/file_organizer/master/examples/4-output_files.png)
 
 ## Copyright
 

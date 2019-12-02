@@ -1,4 +1,4 @@
-"""FileSorter
+"""FileOrganizer
 
 Automatically sort a bunch of files into fitting directories.
 
@@ -9,5 +9,5 @@ __version__ = '1.0.1'
 __author__ = __maintainer__ = 'Wojciech Siewierski'
 
 
-from .file_sorter import FileSorter
-from .interactive import InteractiveFileSorter
+from .file_organizer import FileOrganizer
+from .interactive import InteractiveFileOrganizer

@@ -7,12 +7,12 @@ from .action import Action
 from .candidate import Candidate
 
 
-class FileSorterError(Exception):
-    """A generic error in a FileSorter object."""
+class FileOrganizerError(Exception):
+    """A generic error in a FileOrganizer object."""
     pass
 
 
-class FileSorter:
+class FileOrganizer:
     """Sort a set of files into a set of directories.
 
     The possible targets are scored by the similarity of the names to
@@ -60,8 +60,8 @@ class FileSorter:
         if source_root is None:
             source_root = self.source_root
         if source_root is None:
-            logging.getLogger('FileSorter').error("Source root is not set.")
-            raise FileSorterError()
+            logging.getLogger('FileOrganizer').error("Source root is not set.")
+            raise FileOrganizerError()
 
         candidates = []
         for target in self._get_targets(target_root):
@@ -129,7 +129,7 @@ class FileSorter:
         """
         source_path = os.path.join(action.root, action.source)
         target_path = os.path.join(candidate.root, candidate.name)
-        logging.getLogger('FileSorter').info(
+        logging.getLogger('FileOrganizer').info(
             'Moving "%s" into "%s"',
             source_path,
             target_path,

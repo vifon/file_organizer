@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from file_sorter import InteractiveFileSorter
+from file_organizer import InteractiveFileOrganizer
 import argparse
 import os
 
@@ -26,14 +26,14 @@ def main(argv=None):
     )
     args = parser.parse_args()
 
-    sorter = InteractiveFileSorter(
+    organizer = InteractiveFileOrganizer(
         source=SOURCE_ROOT,
         rules=RULES,
         length_threshold=args.threshold,
     )
     for target in TARGET_ROOTS:
-        sorter.calculate_actions(target)
-    sorter.perform_actions()
+        organizer.calculate_actions(target)
+    organizer.perform_actions()
 
 
 if __name__ == '__main__':
