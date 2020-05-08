@@ -1,3 +1,4 @@
+from itertools import groupby
 import sys
 
 from . import file_organizer
@@ -13,24 +14,35 @@ class InteractiveFileOrganizer(file_organizer.FileOrganizer):
         if not self.queue:
             return
         print("\n\nQueued actions:")
-        for action, candidate in self.queue:
-            print('\n-', action.source)
+
+        def grouped_actions():
+            """Group the actions queue by target directory."""
+            def key(x):
+                action, candidate = x
+                return candidate
+            return groupby(sorted(self.queue, key=key), key=key)
+
+        for candidate, group in grouped_actions(self.queue):
+            print()
+            for action, _ in group:
+                print('-', action.source)
             print('->', candidate.name)
         while True:
             choice = input('\nPerform? [ (Y)es/(n)o ] ').lower()
             if choice in {'y', 'n', 'q', ''}:
                 break
         if choice in {'y'}:
-            for action, candidate in self.queue:
-                print(
-                    'Moving "{}"... '.format(action.source),
-                    end="",
-                    flush=True,
-                )
-                if super().execute_action(action, candidate):
-                    print("DONE!")
-                else:
-                    print("ERROR!")
+            for candidate, group in grouped_actions(self.queue):
+                for action, _ in group:
+                    print(
+                        'Moving "{}"... '.format(action.source),
+                        end="",
+                        flush=True,
+                    )
+                    if super().execute_action(action, candidate):
+                        print("DONE!")
+                    else:
+                        print("ERROR!")
 
 
     def consider_action(self, action):
