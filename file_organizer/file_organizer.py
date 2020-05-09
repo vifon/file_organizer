@@ -1,3 +1,4 @@
+from itertools import groupby
 import copy
 import logging
 import os
@@ -33,6 +34,7 @@ class FileOrganizer:
         self.rules = rules or {}
         self.actions = {}
         self.length_threshold = length_threshold
+        self.queue = []
 
     def _get_targets(self, target_root):
         """Get all the target directories in a root."""
@@ -103,39 +105,66 @@ class FileOrganizer:
             if action.candidates:
                 self.actions[key] = action
 
-    def perform_actions(self):
-        """Perform the queued actions."""
+    def run(self):
+        self.choose_actions()
+        self.execute_actions()
+
+    def choose_actions(self):
+        """Choose the best candidates for actions and enqueue them."""
         for action in sorted(self.actions.values(), key=lambda x: x.source):
             self.consider_action(action)
 
     def consider_action(self, action):
-        """Consider each candidate in the scoring order and move the source.
+        """Consider each candidate in the scoring order and enqueue actions.
 
         By default move to the top rated candidate.  Override
-        self.execute_action to change this behavior.
+        self.enqueue_action to change this behavior.
 
         """
         for candidate in action:
-            if self.execute_action(action, candidate):
+            if self.enqueue_action(action, candidate):
                 return
 
-    def execute_action(self, action, candidate):
-        """Move the source file to the target.
+    def enqueue_action(self, action, candidate):
+        """Enqueue the source file for moving to the target.
 
-        May be overriden.  If returns True, move to the next source
+        May be overriden.  If returns True, move on to the next source
         file.  If returns False, it'll be called again with the next
         candidate.
 
         """
-        source_path = os.path.join(action.root, action.source)
-        target_path = os.path.join(candidate.root, candidate.name)
-        logging.getLogger('FileOrganizer').info(
-            'Moving "%s" into "%s"',
-            source_path,
-            target_path,
-        )
-        self.move_command(source_path, target_path)
+        self.queue.append((action, candidate))
         return True
 
-    def move_command(self, src, dst):
+    def grouped_queue(self):
+        """Group the actions queue by target directory."""
+        def key(x):
+            action, candidate = x
+            return candidate
+        return groupby(sorted(self.queue, key=key), key=key)
+
+    def execute_actions(self):
+        for candidate, group in self.grouped_queue():
+            self.execute_action_group(candidate, group)
+
+    def execute_action_group(self, candidate, group):
+        target_path = os.path.join(candidate.root, candidate.name)
+        source_paths = []
+        for action, _ in group:
+            source_path = os.path.join(action.root, action.source)
+            source_paths.append(source_path)
+            logging.getLogger('FileOrganizer').info(
+                'Moving "%s" into "%s"',
+                source_path,
+                target_path,
+            )
+        self.move_group(source_paths, target_path)
+
+    def move_group(self, srcs, dst):
+        """Move all the files scheduled to the same target."""
+        for src in srcs:
+            self.move_single(src, dst)
+
+    def move_single(self, src, dst):
+        """Move each individual file."""
         shutil.move(src, dst)
