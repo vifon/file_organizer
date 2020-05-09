@@ -144,10 +144,12 @@ class FileOrganizer:
         return groupby(sorted(self.queue, key=key), key=key)
 
     def execute_actions(self):
+        """Execute the queued actions grouped by the target directory."""
         for candidate, group in self.grouped_queue():
             self.execute_action_group(candidate, group)
 
     def execute_action_group(self, candidate, group):
+        """Execute a group of actions scheduled to the same target."""
         target_path = os.path.join(candidate.root, candidate.name)
         source_paths = []
         for action, _ in group:
@@ -161,10 +163,20 @@ class FileOrganizer:
         self.move_group(source_paths, target_path)
 
     def move_group(self, srcs, dst):
-        """Move all the files scheduled to the same target."""
+        """Move all the files scheduled to the same target.
+
+        Override this method and ignore move_single() to implement
+        batch moving.
+
+        """
         for src in srcs:
             self.move_single(src, dst)
 
     def move_single(self, src, dst):
-        """Move each individual file."""
+        """Move each individual file.
+
+        Override this method to implement custom moving logic (for
+        example using rsync).
+
+        """
         shutil.move(src, dst)
