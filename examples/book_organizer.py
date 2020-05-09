@@ -33,7 +33,7 @@ def main(argv=None):
     )
     for target in TARGET_ROOTS:
         organizer.calculate_actions(target)
-    organizer.perform_actions()
+    organizer.run()
 
 
 if __name__ == '__main__':
