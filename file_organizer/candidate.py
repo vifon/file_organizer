@@ -42,13 +42,17 @@ class Candidate:
             self.name,
         )
 
+    def __key(self):
+        return (self.root, self.name, self.score)
+
     def __hash__(self):
-        return hash((self.root, self.name, self.score))
+        return hash(self.__key())
 
     def __eq__(self, other):
-        return (self.name == other.name
-                and self.root == other.root
-                and self.score == other.score)
+        return self.__key() == other.__key()
+
+    def __lt__(self, other):
+        return self.__key() < other.__key()
 
     def __repr__(self):
         return '<Candidate "{}">'.format(self.name)
