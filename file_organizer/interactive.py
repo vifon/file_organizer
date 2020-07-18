@@ -58,7 +58,7 @@ class InteractiveFileOrganizer(file_organizer.FileOrganizer):
             choice = input('\nPerform? [ (Y)es/(n)o ] ').lower()
             if choice in {'y', 'n', 'q', ''}:
                 break
-        if choice in {'y'}:
+        if choice in {'y', ''}:
             super().execute_actions()
 
     def execute_action_group(self, candidate, group):
