@@ -36,14 +36,14 @@ class FileOrganizer:
         self.length_threshold = length_threshold
         self.queue = []
 
-    def _get_targets(self, target_root):
+    def get_targets(self, target_root):
         """Get all the target directories in a root."""
         targets = os.listdir(target_root)
         for target in targets:
             if os.path.isdir(os.path.join(target_root, target)):
                 yield target
 
-    def _get_files(self, source_root):
+    def get_files(self, source_root):
         """Get all the files to be sorted in a root."""
         files = os.listdir(source_root)
         for file in files:
@@ -66,14 +66,14 @@ class FileOrganizer:
             raise FileOrganizerError()
 
         candidates = []
-        for target in self._get_targets(target_root):
+        for target in self.get_targets(target_root):
             candidates.append(Candidate(
                 name=target,
                 root=target_root,
                 length_threshold=self.length_threshold,
             ))
 
-        for file in self._get_files(source_root):
+        for file in self.get_files(source_root):
             key = os.path.join(source_root, file)
             if key in self.actions:
                 action = self.actions[key]
