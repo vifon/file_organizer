@@ -5,7 +5,9 @@ import argparse
 import os
 
 
-SOURCE_ROOT = os.path.join(os.environ['HOME'], "dl")
+SOURCE_ROOTS = [
+    os.path.join(os.environ['HOME'], "dl"),
+]
 TARGET_ROOTS = [
     os.path.join(os.environ['HOME'], "dl/books"),
 ]
@@ -27,7 +29,7 @@ def main(argv=None):
     args = parser.parse_args()
 
     organizer = InteractiveFileOrganizer(
-        source=SOURCE_ROOT,
+        sources=SOURCE_ROOTS,
         rules=RULES,
         length_threshold=args.threshold,
     )

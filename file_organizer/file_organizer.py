@@ -21,7 +21,7 @@ class FileOrganizer:
 
     """
 
-    def __init__(self, source=None, rules=None, length_threshold=3):
+    def __init__(self, sources=None, rules=None, length_threshold=3):
         """Arguments:
 
         - source (optional): a default argument for
@@ -30,7 +30,7 @@ class FileOrganizer:
           to target absolute paths
 
         """
-        self.source_root = source
+        self.source_roots = sources
         self.rules = rules or {}
         self.actions = {}
         self.length_threshold = length_threshold
@@ -50,18 +50,18 @@ class FileOrganizer:
             if os.path.isfile(os.path.join(source_root, file)):
                 yield file
 
-    def calculate_actions(self, target_root, source_root=None):
+    def calculate_actions(self, target_root, source_roots=None):
         """Add a target and source root and rate the candidates.
 
         May be called multiple times with various roots.
 
-        If source_root is omitted, self.source_root is used instead
+        If source_roots is omitted, self.source_roots is used instead
         (if passed, error otherwise).
 
         """
-        if source_root is None:
-            source_root = self.source_root
-        if source_root is None:
+        if source_roots is None:
+            source_roots = self.source_roots
+        if source_roots is None:
             logging.getLogger('FileOrganizer').error("Source root is not set.")
             raise FileOrganizerError()
 
@@ -73,37 +73,38 @@ class FileOrganizer:
                 length_threshold=self.length_threshold,
             ))
 
-        for file in self.get_files(source_root):
-            key = os.path.join(source_root, file)
-            if key in self.actions:
-                action = self.actions[key]
-            else:
-                action = Action(
-                    source=file,
-                    source_root=source_root,
-                )
+        for source_root in source_roots:
+            for file in self.get_files(source_root):
+                key = os.path.join(source_root, file)
+                if key in self.actions:
+                    action = self.actions[key]
+                else:
+                    action = Action(
+                        source=file,
+                        source_root=source_root,
+                    )
 
-            for rule, target in self.rules.items():
-                if rule in file:
-                    action.candidates.add(Candidate(
-                        name=os.path.basename(target),
-                        root=os.path.dirname(target),
-                        score=9999,
-                        length_threshold=self.length_threshold,
-                    ))
+                for rule, target in self.rules.items():
+                    if rule in file:
+                        action.candidates.add(Candidate(
+                            name=os.path.basename(target),
+                            root=os.path.dirname(target),
+                            score=9999,
+                            length_threshold=self.length_threshold,
+                        ))
 
-            for candidate in candidates:
-                score = 0
-                for word in candidate.elements:
-                    if word.lower() in file.lower():
-                        score += 1
-                if score > 0:
-                    c = copy.copy(candidate)
-                    c.score = score
-                    action.candidates.add(c)
+                for candidate in candidates:
+                    score = 0
+                    for word in candidate.elements:
+                        if word.lower() in file.lower():
+                            score += 1
+                    if score > 0:
+                        c = copy.copy(candidate)
+                        c.score = score
+                        action.candidates.add(c)
 
-            if action.candidates:
-                self.actions[key] = action
+                if action.candidates:
+                    self.actions[key] = action
 
     def run(self):
         self.choose_actions()
