@@ -45,10 +45,9 @@ class FileOrganizer:
 
     def get_files(self, source_root):
         """Get all the files to be sorted in a root."""
-        files = os.listdir(source_root)
-        for file in files:
-            if os.path.isfile(os.path.join(source_root, file)):
-                yield file
+        for dirpath, _, filenames in os.walk(source_root):
+            for filename in filenames:
+                yield os.path.join(dirpath, filename)
 
     def calculate_actions(self, target_root, source_roots=None):
         """Add a target and source root and rate the candidates.
@@ -74,18 +73,19 @@ class FileOrganizer:
             ))
 
         for source_root in source_roots:
-            for file in self.get_files(source_root):
-                key = os.path.join(source_root, file)
+            for filepath in self.get_files(source_root):
+                relpath = os.path.relpath(filepath, source_root)
+                key = filepath
                 if key in self.actions:
                     action = self.actions[key]
                 else:
                     action = Action(
-                        source=file,
+                        source=relpath,
                         source_root=source_root,
                     )
 
                 for rule, target in self.rules.items():
-                    if rule in file:
+                    if rule in relpath:
                         action.candidates.add(Candidate(
                             name=os.path.basename(target),
                             root=os.path.dirname(target),
@@ -96,7 +96,7 @@ class FileOrganizer:
                 for candidate in candidates:
                     score = 0
                     for word in candidate.elements:
-                        if word.lower() in file.lower():
+                        if word.lower() in relpath.lower():
                             score += 1
                     if score > 0:
                         c = copy.copy(candidate)
