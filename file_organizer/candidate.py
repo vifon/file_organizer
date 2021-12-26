@@ -43,7 +43,7 @@ class Candidate:
         )
 
     def __key(self):
-        return (self.root, self.name, self.score)
+        return (self.root, self.name)
 
     def __hash__(self):
         return hash(self.__key())
