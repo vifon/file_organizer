@@ -6,6 +6,10 @@ from . import file_organizer
 class InteractiveFileOrganizer(file_organizer.FileOrganizer):
     """A FileOrganizer variant that interactively asks the user about candidates."""
 
+    def __init__(self, *args, **kwargs):
+        self.filter = kwargs.pop('filter', None)
+        super().__init__(*args, **kwargs)
+
     def choose_actions(self):
         self.action_for_all = None
         super().choose_actions()
@@ -15,7 +19,9 @@ class InteractiveFileOrganizer(file_organizer.FileOrganizer):
             print("\nCurrent file:", action.source)
 
         while True:
-            if self.action_for_all == 'accept':
+            if self.filter and self.filter.lower() not in action.source.lower():
+                choice = 's'
+            elif self.action_for_all == 'accept':
                 choice = 'y'
             elif self.action_for_all == 'skip':
                 choice = 's'
