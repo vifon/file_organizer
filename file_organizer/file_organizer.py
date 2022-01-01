@@ -109,6 +109,7 @@ class FileOrganizer:
     def run(self):
         self.choose_actions()
         self.execute_actions()
+        self.cleanup_actions()
 
     def choose_actions(self):
         """Choose the best candidates for actions and enqueue them."""
@@ -143,6 +144,25 @@ class FileOrganizer:
             action, candidate = x
             return candidate
         return groupby(sorted(self.queue, key=key), key=key)
+
+    def cleanup_actions(self):
+        """Perform cleanup operations, such as removing empty directories."""
+        def key(x):
+            action, candidate = x
+            return os.path.dirname(action.source)
+        for parent, actions in groupby(sorted(self.queue, key=key), key=key):
+            if parent == '':
+                continue
+            root = next(actions)[0].root
+            try:
+                cwd = os.getcwd()
+                os.chdir(root)
+                os.removedirs(parent)
+            except OSError:
+                # The directory is not empty, no big deal.
+                pass
+            finally:
+                os.chdir(cwd)
 
     def execute_actions(self):
         """Execute the queued actions grouped by the target directory."""
