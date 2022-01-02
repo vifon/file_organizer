@@ -28,7 +28,7 @@ These are the results of running the [example script](https://github.com/vifon/f
 
 ## Copyright
 
-Copyright (C) 2019  Wojciech Siewierski
+Copyright (C) 2019-2022  Wojciech Siewierski
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
