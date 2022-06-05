@@ -15,25 +15,7 @@ class InteractiveFileOrganizer(file_organizer.FileOrganizer):
         super().choose_actions()
 
     def enqueue_action(self, action, candidate):
-        if self.action_for_all is None:
-            print("\nCurrent file:", action.source)
-
-        while True:
-            if self.filter and self.filter.lower() not in action.source.lower():
-                choice = 's'
-            elif self.action_for_all == 'accept':
-                choice = 'y'
-            elif self.action_for_all == 'skip':
-                choice = 's'
-            else:
-                print("Proposed target:", candidate.name)
-                choice = input(
-                    'Move? (score: {score}, ratio: {ratio:.2f}) '
-                    '[ (y)es/(s)kip/(N)o/(a)ll/s(k)ip all ] '.format(
-                        score=candidate.score,
-                        ratio=candidate.ratio,
-                    )
-                ).lower()
+        def process_choice():
             if choice in {'y'}:
                 self.queue.append((action, candidate))
                 return True
@@ -49,6 +31,35 @@ class InteractiveFileOrganizer(file_organizer.FileOrganizer):
                 sys.exit(0)
             else:
                 print("Unknown choice:", choice)
+
+        if self.filter:
+            if self.filter.lower() in action.source.lower():
+                choice = 'y'
+            else:
+                choice = 's'
+            return process_choice()
+        else:
+            if self.action_for_all is None:
+                print("\nCurrent file:", action.source)
+
+            while True:
+                if self.action_for_all == 'accept':
+                    choice = 'y'
+                elif self.action_for_all == 'skip':
+                    choice = 's'
+                else:
+                    print("Proposed target:", candidate.name)
+                    choice = input(
+                        'Move? (score: {score}, ratio: {ratio:.2f}) '
+                        '[ (y)es/(s)kip/(N)o/(a)ll/s(k)ip all ] '.format(
+                            score=candidate.score,
+                            ratio=candidate.ratio,
+                        )
+                    ).lower()
+
+                ret = process_choice()
+                if ret is not None:
+                    return ret
 
     def execute_actions(self):
         if not self.queue:
