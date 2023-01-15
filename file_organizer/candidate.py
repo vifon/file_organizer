@@ -24,7 +24,7 @@ class Candidate:
 
     def split_name(self):
         """Split the name into individual elements."""
-        return re.findall(r'\w+', self.name)
+        return re.findall(r"\w+", self.name)
 
     def consider_element(self, element):
         """Whether an element should be ignored or not.

@@ -11,7 +11,9 @@ class Action:
 
     def __iter__(self):
         """Loop over the candidates in order defined by self.score."""
-        return iter(sorted(
-            self.candidates,
-            key=Candidate.score,
-        ))
+        return iter(
+            sorted(
+                self.candidates,
+                key=Candidate.score,
+            )
+        )

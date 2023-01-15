@@ -8,7 +8,7 @@ class InteractiveFileOrganizer(file_organizer.FileOrganizer):
     """A FileOrganizer variant that interactively asks the user about candidates."""
 
     def __init__(self, *args, **kwargs):
-        self.filter = kwargs.pop('filter', None)
+        self.filter = kwargs.pop("filter", None)
         super().__init__(*args, **kwargs)
 
     def choose_actions(self):
@@ -17,42 +17,42 @@ class InteractiveFileOrganizer(file_organizer.FileOrganizer):
 
     def enqueue_action(self, action, candidate):
         def process_choice():
-            if choice in {'y'}:
+            if choice in {"y"}:
                 self.queue.append((action, candidate))
                 return True
-            elif choice in {'s'}:
+            elif choice in {"s"}:
                 return True
-            elif choice in {'k'}:
-                self.action_for_all = 'skip'
-            elif choice in {'n', ''}:
+            elif choice in {"k"}:
+                self.action_for_all = "skip"
+            elif choice in {"n", ""}:
                 return False
-            elif choice in {'a'}:
-                self.action_for_all = 'accept'
-            elif choice in {'q'}:
+            elif choice in {"a"}:
+                self.action_for_all = "accept"
+            elif choice in {"q"}:
                 sys.exit(0)
             else:
                 print("Unknown choice:", choice)
 
         if self.filter:
             if re.search(self.filter, action.source, re.IGNORECASE):
-                choice = 'y'
+                choice = "y"
             else:
-                choice = 's'
+                choice = "s"
             return process_choice()
         else:
             if self.action_for_all is None:
                 print("\nCurrent file:", action.source)
 
             while True:
-                if self.action_for_all == 'accept':
-                    choice = 'y'
-                elif self.action_for_all == 'skip':
-                    choice = 's'
+                if self.action_for_all == "accept":
+                    choice = "y"
+                elif self.action_for_all == "skip":
+                    choice = "s"
                 else:
                     print("Proposed target:", candidate.name)
                     choice = input(
-                        'Move? (score: {score}, ratio: {ratio:.2f}) '
-                        '[ (y)es/(s)kip/(N)o/(a)ll/s(k)ip all ] '.format(
+                        "Move? (score: {score}, ratio: {ratio:.2f}) "
+                        "[ (y)es/(s)kip/(N)o/(a)ll/s(k)ip all ] ".format(
                             score=candidate.score,
                             ratio=candidate.ratio,
                         )
@@ -70,13 +70,13 @@ class InteractiveFileOrganizer(file_organizer.FileOrganizer):
         for candidate, group in self.grouped_queue():
             print()
             for action, _ in group:
-                print('-', action.source)
-            print('->', candidate.name)
+                print("-", action.source)
+            print("->", candidate.name)
         while True:
-            choice = input('\nPerform? [ (Y)es/(n)o ] ').lower()
-            if choice in {'y', 'n', 'q', ''}:
+            choice = input("\nPerform? [ (Y)es/(n)o ] ").lower()
+            if choice in {"y", "n", "q", ""}:
                 break
-        if choice in {'y', ''}:
+        if choice in {"y", ""}:
             super().execute_actions()
 
     def execute_action_group(self, candidate, group):

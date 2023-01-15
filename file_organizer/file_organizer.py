@@ -1,8 +1,8 @@
-from itertools import groupby
 import copy
 import logging
 import os
 import shutil
+from itertools import groupby
 
 from .action import Action
 from .candidate import Candidate
@@ -10,6 +10,7 @@ from .candidate import Candidate
 
 class FileOrganizerError(Exception):
     """A generic error in a FileOrganizer object."""
+
     pass
 
 
@@ -61,16 +62,18 @@ class FileOrganizer:
         if source_roots is None:
             source_roots = self.source_roots
         if source_roots is None:
-            logging.getLogger('FileOrganizer').error("Source root is not set.")
+            logging.getLogger("FileOrganizer").error("Source root is not set.")
             raise FileOrganizerError()
 
         candidates = []
         for target in self.get_targets(target_root):
-            candidates.append(Candidate(
-                name=target,
-                root=target_root,
-                length_threshold=self.length_threshold,
-            ))
+            candidates.append(
+                Candidate(
+                    name=target,
+                    root=target_root,
+                    length_threshold=self.length_threshold,
+                )
+            )
 
         for source_root in source_roots:
             for filepath in self.get_files(source_root):
@@ -86,12 +89,14 @@ class FileOrganizer:
 
                 for rule, target in self.rules.items():
                     if rule in relpath:
-                        action.candidates.add(Candidate(
-                            name=os.path.basename(target),
-                            root=os.path.dirname(target),
-                            score=9999,
-                            length_threshold=self.length_threshold,
-                        ))
+                        action.candidates.add(
+                            Candidate(
+                                name=os.path.basename(target),
+                                root=os.path.dirname(target),
+                                score=9999,
+                                length_threshold=self.length_threshold,
+                            )
+                        )
 
                 for candidate in candidates:
                     score = 0
@@ -140,18 +145,22 @@ class FileOrganizer:
 
     def grouped_queue(self):
         """Group the actions queue by target directory."""
+
         def key(x):
             action, candidate = x
             return candidate
+
         return groupby(sorted(self.queue, key=key), key=key)
 
     def cleanup_actions(self):
         """Perform cleanup operations, such as removing empty directories."""
+
         def key(x):
             action, candidate = x
             return os.path.dirname(action.source)
+
         for parent, actions in groupby(sorted(self.queue, key=key), key=key):
-            if parent == '':
+            if parent == "":
                 continue
             root = next(actions)[0].root
             try:
@@ -176,7 +185,7 @@ class FileOrganizer:
         for action, _ in group:
             source_path = os.path.join(action.root, action.source)
             source_paths.append(source_path)
-            logging.getLogger('FileOrganizer').info(
+            logging.getLogger("FileOrganizer").info(
                 'Moving "%s" into "%s"',
                 source_path,
                 target_path,

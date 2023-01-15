@@ -6,22 +6,22 @@ import os
 
 
 SOURCE_ROOTS = [
-    os.path.join(os.environ['HOME'], "dl"),
+    os.path.join(os.environ["HOME"], "dl"),
 ]
 TARGET_ROOTS = [
-    os.path.join(os.environ['HOME'], "dl/books"),
+    os.path.join(os.environ["HOME"], "dl/books"),
 ]
 
 RULES = {
-    "Tolkien":
-    os.path.join(os.environ['HOME'], "dl/books/others"),
+    "Tolkien": os.path.join(os.environ["HOME"], "dl/books/others"),
 }
+
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-t',
-        '--threshold',
+        "-t",
+        "--threshold",
         default=3,
         type=int,
         help="Minimum word length to consider in candidates.",
@@ -38,6 +38,7 @@ def main(argv=None):
     organizer.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from sys import argv
+
     main(argv)
