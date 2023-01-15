@@ -1,3 +1,4 @@
+import re
 import sys
 
 from . import file_organizer
@@ -33,7 +34,7 @@ class InteractiveFileOrganizer(file_organizer.FileOrganizer):
                 print("Unknown choice:", choice)
 
         if self.filter:
-            if self.filter.lower() in action.source.lower():
+            if re.search(self.filter, action.source, re.IGNORECASE):
                 choice = 'y'
             else:
                 choice = 's'
