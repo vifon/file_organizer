@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-from file_organizer import InteractiveFileOrganizer
 import argparse
 import os
 
+from file_organizer import InteractiveFileOrganizer
 
 SOURCE_ROOTS = [
     os.path.join(os.environ["HOME"], "dl"),
